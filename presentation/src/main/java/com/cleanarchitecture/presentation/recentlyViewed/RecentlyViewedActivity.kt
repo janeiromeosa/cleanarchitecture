@@ -1,4 +1,4 @@
-package com.cleanarchitecture.presentation.albums
+package com.cleanarchitecture.presentation.RecentlyViewed
 
 import android.app.SearchManager
 import android.content.Context
@@ -12,62 +12,64 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cleanarchitecture.news_sample_app.R
+import com.cleanarchitecture.presentation.RecentlyVieweds.RecentlyViewedAdapter
+import com.cleanarchitecture.presentation.albums.RecentlyViewedViewModel
+import com.cleanarchitecture.presentation.albums.UiRecentlyViewed
 import com.cleanarchitecture.presentation.common.ErrorViewType
 import com.cleanarchitecture.presentation.common.UiError
 import com.cleanarchitecture.presentation.navigation.AppNavigator
-import kotlinx.android.synthetic.main.activity_albums.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 
-class AlbumsActivity : AppCompatActivity() {
+class RecentlyViewedActivity : AppCompatActivity() {
 
-    private val albumsViewModel: AlbumsViewModel by viewModel()
+    private val RecentlyViewedViewModel: RecentlyViewedViewModel by viewModel()
     private val navigator: AppNavigator by inject { parametersOf(this) }
-    private val onItemClick: ((UiAlbum?) -> Unit) = {
-        it?.let { album ->
-            navigator.toAlbumDetails(album)
+    private val onItemClick: ((UiRecentlyViewed?) -> Unit) = {
+        it?.let { RecentlyViewed ->
+            navigator.toRecentlyViewedDetails(RecentlyViewed)
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }
     }
 
-    private lateinit var albumsAdapter: AlbumsAdapter
+    private lateinit var recentlyViewedAdapter: RecentlyViewedAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_albums)
+        setContentView(R.layout.recently_viewed_recycler_view)
         initialiseView()
     }
 
     override fun onStart() {
         super.onStart()
-        albumsViewModel.getAlbums()
-        albumsViewModel.loadingLiveData.observe(this, Observer {
+        RecentlyViewedViewModel.getRecentlyViewed()
+        RecentlyViewedViewModel.loadingLiveData.observe(this, Observer {
             loading(it)
         })
-        albumsViewModel.contentLiveData.observe(this, Observer {
+        RecentlyViewedViewModel.contentLiveData.observe(this, Observer {
             content(it)
         })
-        albumsViewModel.errorLiveData.observe(this, Observer {
+        RecentlyViewedViewModel.errorLiveData.observe(this, Observer {
             error(it)
         })
     }
 
 
     private fun initialiseView() {
-        albumsAdapter = AlbumsAdapter(onItemClick)
-        rv_albums.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        rv_albums.adapter = albumsAdapter
+        RecentlyViewedAdapter = RecentlyViewedAdapter(onItemClick)
+        rv_RecentlyViewed.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        rv_RecentlyViewed.adapter = RecentlyViewedAdapter
     }
 
     private fun loading(isLoading: Boolean) {
 
     }
 
-    private fun content(it: List<UiAlbum>) {
+    private fun content(it: List<UiRecentlyViewed>) {
         it.let { response ->
-            albumsAdapter.updateList(response)
+            RecentlyViewedAdapter.updateList(response)
         }
     }
 
@@ -79,7 +81,7 @@ class AlbumsActivity : AppCompatActivity() {
                         .setMessage(error.message)
                         .setPositiveButton(error.positive) { dialog, _ ->
                             dialog.dismiss()
-                            albumsViewModel.getAlbums()
+                            RecentlyViewedViewModel.getRecentlyViewed()
                         }
                         .setCancelable(error.cancelable)
                         .show()

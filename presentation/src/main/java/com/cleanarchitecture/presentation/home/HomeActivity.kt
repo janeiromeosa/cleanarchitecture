@@ -1,10 +1,12 @@
 package com.cleanarchitecture.presentation.home
 
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.cleanarchitecture.news_sample_app.R
+import com.cleanarchitecture.presentation.browseProducts.BrowseProductsFragment
 import com.cleanarchitecture.presentation.common.ErrorViewType
 import com.cleanarchitecture.presentation.common.FragmentsTransactionsManager
 import com.cleanarchitecture.presentation.common.UiError
@@ -29,9 +31,21 @@ class HomeActivity : AppCompatActivity() {
         setupBottomNav()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search_menu, menu)
+
+        // Associate searchable configuration with the SearchView
+//        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+//        (menu.findItem(R.id.search).actionView as SearchView).apply {
+//            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+//        }
+
+        return true
+    }
+
     private fun toHome() = goTo(
-            fragment = HomeFragment.newInstance(navigator),
-            tag = HomeFragment.TAG,
+            fragment = BrowseProductsFragment.newInstance(navigator),
+            tag = BrowseProductsFragment.TAG,
             titleId = R.string.bnav_title_home)
 
     private fun toSearch() = goTo(
